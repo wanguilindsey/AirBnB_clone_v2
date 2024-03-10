@@ -37,12 +37,14 @@ def do_deploy(archive_path):
 
         put(archive_path, '/tmp/')
         run('mkdir -p {}{}/'.format(release_path, no_ext))
-        run('tar -xzf /tmp/{} -C {}{}/'.format(archive_name, release_path, no_ext))
+        run('tar -xzf /tmp/{} -C {}{}/'
+            .format(archive_name, release_path, no_ext))
         run('rm /tmp/{}'.format(archive_name))
         run('mv {0}{1}/web_static/* {0}{1}/'.format(release_path, no_ext))
         run('rm -rf {0}{1}/web_static'.format(release_path, no_ext))
         run('rm -rf /data/web_static/current')
-        run('ln -s {}{}/ /data/web_static/current'.format(release_path, no_ext))
+        run('ln -s {}{}/ /data/web_static/current'
+            .format(release_path, no_ext))
         return True
     except Exception as e:
         print("Error:", e)
