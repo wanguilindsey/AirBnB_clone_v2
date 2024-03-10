@@ -1,74 +1,71 @@
-# Ensure Nginx is installed
+# Puppet manifest to set up the web servers for the deployment of web_static
+
+# Install Nginx if not already installed
 package { 'nginx':
   ensure => installed,
 }
 
-# Create necessary directories
+# Create necessary directories if they don't exist
 file { '/data':
   ensure => directory,
+  owner  => 'ubuntu',
+  group  => 'ubuntu',
 }
 
 file { '/data/web_static':
   ensure => directory,
+  owner  => 'ubuntu',
+  group  => 'ubuntu',
 }
 
 file { '/data/web_static/releases':
   ensure => directory,
+  owner  => 'ubuntu',
+  group  => 'ubuntu',
 }
 
 file { '/data/web_static/shared':
   ensure => directory,
+  owner  => 'ubuntu',
+  group  => 'ubuntu',
 }
 
 file { '/data/web_static/releases/test':
   ensure => directory,
+  owner  => 'ubuntu',
+  group  => 'ubuntu',
 }
 
 # Create a fake HTML file for testing
 file { '/data/web_static/releases/test/index.html':
   ensure  => file,
-  content => '<html><head></head><body>Holberton School</body></html>',
+  content => '<html>
+<head>
+</head>
+<body>Holberton School</body>
+</html>',
+  owner   => 'ubuntu',
+  group   => 'ubuntu',
 }
 
-# Create a symbolic link if it doesn't exist
+# Create symbolic link if it doesn't exist
 file { '/data/web_static/current':
   ensure => link,
   target => '/data/web_static/releases/test',
-  force  => true,
+  owner  => 'ubuntu',
+  group  => 'ubuntu',
 }
 
-# Set ownership of /data folder to ubuntu user and group recursively
-file { '/data':
-  owner   => 'ubuntu',
-  group   => 'ubuntu',
-  recurse => true,
+# Update Nginx configuration
+file_line { 'nginx_config':
+  ensure => present,
+  path   => '/etc/nginx/sites-available/default',
+  line   => 'location /hbnb_static { alias /data/web_static/current; }',
 }
 
-# Update Nginx configuration to serve content from /data/web_static/current
-file { '/etc/nginx/sites-available/default':
-  ensure  => present,
-  content => "
-    server {
-        listen 80 default_server;
-        listen [::]:80 default_server;
-
-        root /var/www/html;
-
-        index index.html index.htm index.nginx-debian.html;
-
-        server_name _;
-
-        location /hbnb_static {
-            alias /data/web_static/current/;
-        }
-    }
-  ",
-  notify => Service['nginx'],
-}
-
-# Restart Nginx service if the configuration changes
+# Restart Nginx to apply changes
 service { 'nginx':
-  ensure  => running,
-  enable  => true,
-  require => File['/etc/nginx/sites-available/default'],
+  ensure    => running,
+  enable    => true,
+  subscribe => File['nginx_config'],
 }
