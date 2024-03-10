@@ -17,7 +17,7 @@ def do_clean(number=0):
         return
 
     try:
-        number_to_keep = number
+        number_to_keep = number + 1
 
         with lcd("versions"):
             local("ls -1t | tail -n +{} | xargs -I {{}} rm {{}}"
