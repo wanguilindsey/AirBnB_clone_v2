@@ -28,3 +28,7 @@ def do_clean(number=0):
                 .format(number_to_keep))
     except Exception as e:
         print("Error:", e)
+
+
+        if number_to_keep <= 1:
+            return
