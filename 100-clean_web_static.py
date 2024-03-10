@@ -13,7 +13,7 @@ env.key_filename = '~/.ssh/id_rsa'
 def do_clean(number=0):
     """Deletes out-of-date archives"""
     number = int(number)
-    if number <= 0:
+    if number < 0:
         return
 
     try:
